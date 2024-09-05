@@ -1,51 +1,32 @@
-import customtkinter as ctk
+import asyncio
+import browsers
+from pyppeteer import launch
 
-ctk.set_appearance_mode("System")
-ctk.set_default_color_theme("dark-blue")
+try:
+    myBrowserPath = browsers.get("chrome")['path']
+    print("Ścieżka: ", myBrowserPath)
+except Exception as e:
+    raise KeyError(f"Nie znaleziono {e}")
 
-appWidth, appHeight = 300, 300
+async def main():
+    browserExecutablePath = myBrowserPath
 
-class App(ctk.CTk):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.title("Zielony Ogrodnik")
-        self.geometry(f"{appWidth}x{appHeight}")
+    browser = await launch({
+        'headless': False,
+        'executablePath': browserExecutablePath,
+    })
 
-        self.plantLabel = ctk.CTkLabel(self,
-                                       text="Sadzimy")
-        self.plantLabel.grid(row=3, column=0,
-                                  padx=20, pady=20,
-                                  sticky="ew")
+    page = await browser.newPage()
 
-        self.plantOptionMenu = ctk.CTkOptionMenu(self,
-                                                 values=["Sałata",
-                                                         "Marchew"])
-        self.plantOptionMenu.grid(row=3, column=1,
-                                  padx=20, pady=20,
-                                  columnspan=2, sticky="ew")
+    await page.setViewport({'width': 800, 'height': 600})
+    await page.goto('https://www.zieloneimperium.pl/login.php')
+    await page.waitForSelector('#login_server')
+    await page.select('#login_server', 'server1')
+    await page.type('#login_user', 'login')
+    await page.type('#login_pass', 'password')
+    await page.click('#submitlogin')
+    await page.waitForNavigation()
 
-        self.waterPlantsLabel = ctk.CTkLabel(self,
-                                             text="Podlewamy?")
-        self.waterPlantsLabel.grid(row=4, column=0,
-                                   padx=20, pady=20,
-                                   sticky="ew")
+    await browser.close()
 
-        self.waterPlantsCheckboxVar = ctk.StringVar(value="True")
-
-        self.waterPlantsCheckbox = ctk.CTkCheckBox(self, text="",
-                                                   variable=self.waterPlantsCheckboxVar,
-                                                   onvalue="True",
-                                                   offvalue="False")
-        self.waterPlantsCheckbox.grid(row=4, column=1, padx=20,
-                                      pady=20, sticky="ew")
-
-        self.plantButton = ctk.CTkButton(self,
-                                         text="Zasiej")
-        self.plantButton.grid(row=5, column=1,
-                              columnspan=2,
-                              padx=20, pady=20,
-                              sticky="ew")
-
-if __name__ == "__main__":
-    app = App()
-    app.mainloop()
+asyncio.get_event_loop().run_until_complete(main())
