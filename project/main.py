@@ -1,24 +1,24 @@
 import asyncio
-import browsers
+from browsers import get as get_browser
 from pyppeteer import launch
 
 try:
-    myBrowserPath = browsers.get("chrome")['path']
+    myBrowserPath = get_browser("chrome")['path']
     print("Ścieżka: ", myBrowserPath)
 except Exception as e:
     raise KeyError(f"Nie znaleziono {e}")
 
 async def main():
-    browserExecutablePath = myBrowserPath
+    browser_executable_path = myBrowserPath
 
     browser = await launch({
         'headless': False,
-        'executablePath': browserExecutablePath,
+        'executablePath': browser_executable_path,
     })
 
     page = await browser.newPage()
 
-    await page.setViewport({'width': 800, 'height': 600})
+    # Logowanie
     await page.goto('https://www.zieloneimperium.pl/login.php')
     await page.waitForSelector('#login_server')
     await page.select('#login_server', 'server1')
@@ -27,6 +27,29 @@ async def main():
     await page.click('#submitlogin')
     await page.waitForNavigation()
 
+    # Akceptacja Cookies
+    await page.waitForSelector('a.cookiemon-btn.cookiemon-btn-accept', timeout=500)
+    await page.click('a.cookiemon-btn.cookiemon-btn-accept')
+
+    # Zebranie gotowych upraw
+    await page.waitForSelector('div[onclick="gardenjs.harvestAll()"]')
+    await page.click('div[onclick="gardenjs.harvestAll()"]')
+
+    # Potwierdzenie komunikatu dotyczącego zebrania gotowych upraw
+    try:
+        await page.waitForSelector('img.link.closeBtn', visible=True, timeout=500)
+        await page.click('img.link.closeBtn')
+    except asyncio.TimeoutError:
+        try:
+            await page.waitForSelector('#baseDialogButton', visible=True, timeout=500)
+            await page.evaluate('document.querySelector("#baseDialogButton").scrollIntoView();')
+            await page.click('#baseDialogButton')
+        except asyncio.TimeoutError:
+            print("Nie znaleziono komunikatów zebrania upraw.")
+
+    # Zakończenie programu
+    print("Naciśnij enter by zamknąć pogram...")
+    input()
     await browser.close()
 
-asyncio.get_event_loop().run_until_complete(main())
+asyncio.run(main())
