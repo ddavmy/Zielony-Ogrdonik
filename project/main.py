@@ -47,6 +47,62 @@ async def main():
         except asyncio.TimeoutError:
             print("Nie znaleziono komunikatów zebrania upraw.")
 
+    # Określenie pustych pól uprawnych
+    async def get_gardenfields_with_image(empty_url):
+        divs_with_empty_background_image = await page.evaluate(f"""
+            (backgroundImageUrl) => {{
+                const gardenfields = Array.from(document.querySelectorAll('div.gardenfield'));
+                const result = gardenfields.filter(div => {{
+                    const childDivs = div.querySelectorAll('div');
+                    return Array.from(childDivs).some(child => {{
+                        const style = window.getComputedStyle(child);
+                        return style.backgroundImage.includes(backgroundImageUrl);
+                    }});
+                }});
+                return result.map(div => div.id);
+            }}
+        """, empty_url)
+
+        return divs_with_empty_background_image
+
+    # Określenie zajętych pól uprawnych
+    async def get_gardenfields_with_different_image(target_image_fragment):
+        divs_with_different_background_image = await page.evaluate(f"""
+            (targetImageFragment) => {{
+                const gardenfields = Array.from(document.querySelectorAll('div.gardenfield'));
+                const result = gardenfields.filter(div => {{
+                    const childDivs = div.querySelectorAll('div');
+                    return Array.from(childDivs).some(child => {{
+                        const style = window.getComputedStyle(child);
+                        const backgroundImageUrl = style.backgroundImage;
+                        const imageFragment = backgroundImageUrl.split('/produkte/')[1]?.replace('")', '');
+                        return imageFragment && imageFragment !== targetImageFragment;
+                    }});
+                }});
+                return result.map(div => div.id);
+            }}
+        """, target_image_fragment)
+
+        return divs_with_different_background_image
+
+    # Przekazanie danych do obliczenia ilości wolnych i zajętych pól
+    target_image_fragment = '0.gif'
+    empty_space_background_image_url = 'https://wurzelimperium.wavecdn.net/pics/produkte/0.gif'
+    empty_space_divs = await get_gardenfields_with_image(empty_space_background_image_url)
+    different_image_divs = await get_gardenfields_with_different_image(target_image_fragment)
+
+    # Kliknięcie w puste pola uprawne
+    for div in empty_space_divs:
+        await page.waitForSelector(f'#{div}')
+        await page.evaluate(f'document.querySelector("#{div}").scrollIntoView();')
+        await page.click(f'#{div}')
+
+    # Wyświetlenie liczby zajętych pól uprawnych
+    not_empty_space_quantity = 0
+    for div in different_image_divs:
+        not_empty_space_quantity += 1
+    print(not_empty_space_quantity)
+
     # Zakończenie programu
     print("Naciśnij enter by zamknąć pogram...")
     input()
