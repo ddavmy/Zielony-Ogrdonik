@@ -39,3 +39,13 @@ async def click_div_with_selected_plant(name, page, number):
         await page.click(selector)
     except Exception as e:
         print(f"Na regale nie znaleziono {name}: {e}")
+
+
+async def water_unwatered_plants(page, unwatered_plants):
+    await page.waitForSelector('#giessen')
+    await page.click('#giessen')
+
+    for div in unwatered_plants:
+        await page.waitForSelector(f'#{div}')
+        await page.evaluate(f'document.querySelector("#{div}").scrollIntoView();')
+        await page.click(f'#{div}')
