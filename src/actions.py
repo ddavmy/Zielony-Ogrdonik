@@ -2,7 +2,6 @@ import asyncio
 import json
 import os
 
-
 async def click_if_present(page, selector, timeout=500):
     try:
         await page.waitForSelector(selector, visible=True, timeout=timeout)
@@ -39,7 +38,6 @@ async def click_div_with_selected_plant(name, page, number):
         await page.click(selector)
     except Exception as e:
         print(f"Na regale nie znaleziono {name}: {e}")
-
 
 async def water_unwatered_plants(page, unwatered_plants):
     await page.waitForSelector('#giessen')

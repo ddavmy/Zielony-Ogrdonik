@@ -30,8 +30,3 @@ async def launch_browser(headless=False):
     })
 
     return page
-
-async def close_browser(browser):
-    print("Naciśnij enter by zamknąć program...")
-    input()
-    await browser.close()
