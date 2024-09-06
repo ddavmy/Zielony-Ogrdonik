@@ -1,7 +1,7 @@
 import asyncio
 from src.utils import launch_browser, close_browser
 from src.authorization import login
-from src.actions import accept_cookies, harvest_crops
+from src.actions import accept_cookies, harvest_crops, select_plant
 from src.fieldAnalysis import get_gardenfields_with_image, get_gardenfields_with_different_image
 
 async def main():
@@ -24,6 +24,9 @@ async def main():
 
     empty_space_divs = await get_gardenfields_with_image(page, empty_space_background_image_url)
     different_image_divs = await get_gardenfields_with_different_image(page, target_image_fragment)
+
+    # Wybór co chcemy uprawiać
+    await select_plant("Marchewki", page)
 
     # Posadzenie w miejscu pustych pól uprawnych
     for div in empty_space_divs:

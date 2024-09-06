@@ -1,4 +1,7 @@
 import asyncio
+import json
+import os
+
 
 async def click_if_present(page, selector, timeout=500):
     try:
@@ -18,3 +21,21 @@ async def harvest_crops(page):
 
     await click_if_present(page, 'img.link.closeBtn')
     await click_if_present(page, '#baseDialogButton')
+
+async def select_plant(name, page):
+    current_dir = os.path.dirname(__file__)
+    file_path = os.path.join(current_dir, 'data', 'products.json')
+
+    with open(file_path, 'r') as f:
+        data = json.load(f)
+
+    data_class = data.get(name)
+    await click_div_with_selected_plant(name, page, data_class)
+
+async def click_div_with_selected_plant(name, page, number):
+    selector = f'div#regal_{number}'
+    try:
+        await page.waitForSelector(selector, visible=True, timeout=500)
+        await page.click(selector)
+    except Exception as e:
+        print(f"Na regale nie znaleziono {name}: {e}")
