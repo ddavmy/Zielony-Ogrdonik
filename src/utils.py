@@ -12,7 +12,8 @@ async def launch_browser(headless=False):
         'headless': headless,
         'executablePath': my_browser_path,
         'args': [
-            '--start-maximized',
+            # '--start-maximized',
+            '--start-minimized',
         ]
     })
     page = await browser.newPage()

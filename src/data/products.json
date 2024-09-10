@@ -1,18 +1,68 @@
 {
-    "Sałata": "2",
-    "Truskawki": "3",
-    "Pomidory": "5",
-    "Marchewki": "6",
-    "Cebule": "9",
-    "Porzeczki": "11",
-    "Ogórki": "12",
-    "Rzodkiewki": "14",
-    "Papryki": "15",
-    "Szparagi": "20",
-    "Ziemniaki": "22",
-    "Kalafiory": "32",
-    "Brokuły": "33",
-    "Czosnki": "35",
-    "Słoneczniki": "48",
-    "Nagietki": "49"
+    "products": [
+        {
+            "name": "Sałaty",
+            "code": "2"
+        },
+        {
+            "name": "Truskawki",
+            "code": "3"
+        },
+        {
+            "name": "Pomidory",
+            "code": "5"
+        },
+        {
+            "name": "Marchewki",
+            "code": "6"
+        },
+        {
+            "name": "Cebule",
+            "code": "9"
+        },
+        {
+            "name": "Porzeczki",
+            "code": "11"
+        },
+        {
+            "name": "Ogórki",
+            "code": "12"
+        },
+        {
+            "name": "Rzodkiewki",
+            "code": "14"
+        },
+        {
+            "name": "Papryki",
+            "code": "15"
+        },
+        {
+            "name": "Szparagi",
+            "code": "20"
+        },
+        {
+            "name": "Ziemniaki",
+            "code": "22"
+        },
+        {
+            "name": "Kalafiory",
+            "code": "32"
+        },
+        {
+            "name": "Brokuły",
+            "code": "33"
+        },
+        {
+            "name": "Czosnki",
+            "code": "35"
+        },
+        {
+            "name": "Słoneczniki",
+            "code": "48"
+        },
+        {
+            "name": "Nagietki",
+            "code": "49"
+        }
+    ]
 }
